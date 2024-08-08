@@ -43,3 +43,31 @@ class QuizError extends QuizState {
   @override
   List<Object> get props => [message];
 }
+
+
+
+
+
+
+
+
+
+
+
+class TtsInitial extends QuizState {}
+
+class TtsSpeaking extends QuizState {}
+
+class TtsCompleted extends QuizState {}
+
+class TtsError extends QuizState{
+  final String message;
+
+  TtsError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+
+

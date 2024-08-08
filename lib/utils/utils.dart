@@ -1,3 +1,5 @@
+import 'package:html/parser.dart';
+
 enum Difficulty { easy, medium, hard }
 
 extension DifficultyExtension on Difficulty {
@@ -32,3 +34,8 @@ extension QuestionAmountExtension on QuestionAmount {
 
 final String CATEGORY_URL = 'https://opentdb.com/api_category.php';
 final String BASE_URL = 'https://opentdb.com/api.php';
+
+String decodeHtml(String htmlString) {
+  var document = parse(htmlString);
+  return document.body?.text ?? htmlString;
+}

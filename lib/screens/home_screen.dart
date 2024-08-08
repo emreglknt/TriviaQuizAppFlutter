@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -67,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return GridView.builder(
                       padding: EdgeInsets.all(8.0),
                       gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3, // 4 sütun
                         crossAxisSpacing: 15.0,
                         mainAxisSpacing: 15.0,
@@ -75,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: state.categories.length,
                       itemBuilder: (context, index) {
                         final category = state.categories[index];
+                        final isSelected = _selectedCategory == category.id.toString();
 
                         return GestureDetector(
                           onTap: (){
@@ -82,23 +82,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               _selectedCategory = category.id.toString();
 
 
-                              Fluttertoast.showToast(
-                                  msg: "$_selectedCategory",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.white,
-                                  fontSize: 16.0
-                              );
-
                             });
                           },
                           child: Container(
                             width: 250,
                             padding: EdgeInsets.all(5),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
+                              gradient: isSelected
+                                  ? const LinearGradient(
+                                colors: [Colors.green, Colors.greenAccent],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                                  : const LinearGradient(
                                 colors: [Color(0xffad5389), Color(0xff1d2671)],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -362,12 +358,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   child: Text("Start Now",style: TextStyle(fontWeight: FontWeight.w500,color: Colors.white),),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.all(10.0),
-                    fixedSize: const Size(250,30),
-                    elevation: 7,
-                    shadowColor: Color(0xffEF8011),
-                    backgroundColor: Color(0xffF4640D),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))
+                      padding: EdgeInsets.all(10.0),
+                      fixedSize: const Size(250,30),
+                      elevation: 7,
+                      shadowColor: Color(0xffEF8011),
+                      backgroundColor: Color(0xffF4640D),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))
                   ),
                 ),
               ),

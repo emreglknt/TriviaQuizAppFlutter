@@ -27,3 +27,12 @@ class FetchQuizQuestions extends QuizEvent {
 
 
 class NextQuestionEvent extends QuizEvent {}
+
+class SpeakText extends QuizEvent {
+  final String text;
+
+  const SpeakText(this.text);
+
+  @override
+  List<Object> get props => [text];
+}

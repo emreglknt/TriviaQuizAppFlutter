@@ -76,23 +76,12 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
           await flutterTts.setLanguage("en-US");
           await flutterTts.setPitch(1.0);
           await flutterTts.speak(event.text);
-          // Konuşma tamamlandığında mevcut durumu koruyarak emit yapıyoruz
           emit(currentState);
         } catch (e) {
           emit(QuizError("Failed to speak text"));
         }
       }
     });
-
-
-
-
-
-
-
-
-
-
 
 
 

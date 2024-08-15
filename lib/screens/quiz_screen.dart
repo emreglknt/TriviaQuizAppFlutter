@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quiz_time/screens/quiz_result_screen.dart';
 import '../bloc/quiz_bloc.dart';
 import '../utils/utils.dart';
 
@@ -24,7 +24,9 @@ class _QuizScreenState extends State<QuizScreen> {
   bool isAnswered = false;
   bool isCorrectAnswer = false;
   String selectedAnswer = "";
-  int seconds = 30;
+  int seconds = 15;
+  int _correctAnswers = 0;
+
 
   Timer? timer;
 
@@ -41,13 +43,16 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
+
+
   void resetTimer() {
     setState(() {
-      seconds = 30;
+      seconds = 15;
     });
     timer?.cancel();
     startTimer();
   }
+
 
   void _nextQuestion() {
     if (mounted) {
@@ -103,27 +108,41 @@ class _QuizScreenState extends State<QuizScreen> {
 
                   return Column(
                     children: [
-                      SizedBox(height: 16),
+                      SizedBox(height: 12),
                       Padding(
-                        padding: const EdgeInsets.only(top: 25.0, left: 15, right: 15, bottom: 10),
+                        padding: const EdgeInsets.only(top: 25.0, left: 15, right: 15, bottom: 5),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: Colors.deepPurple.withOpacity(0.4),
                           ),
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                            'Question ${currentQuestionIndex + 1} of $totalQuestions',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
+                          padding: EdgeInsets.all(10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between text and icon
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Question ${currentQuestionIndex + 1} of $totalQuestions',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.volume_up, color: Colors.white), // Set icon color to match the text
+                                onPressed: () {
+                                  BlocProvider.of<QuizBloc>(context).add(SpeakText(state.quizModel.results[currentQuestionIndex].question));
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       ),
+
                       Padding(
                         padding: const EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 10),
                         child: Container(
@@ -138,6 +157,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                       SizedBox(height: 16),
                       Center(
+
                         child: Card(
                           color: Colors.white.withOpacity(0.35),
                           elevation: 10,
@@ -155,15 +175,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                     fontSize: 20,
                                   ),
                                 ),
-                                IconButton(
-                                  icon: Icon(Icons.volume_up),
-                                  onPressed: () {
-                                    BlocProvider.of<QuizBloc>(context).add(SpeakText(state.quizModel.results[currentQuestionIndex].question));
-                                  },
-                                ),
-                                SizedBox(height: 10),
+
+                                const SizedBox(height: 6),
                                 Container(
-                                  height: 300,
+                                  height: 280,
                                   child: ListView.builder(
                                     itemCount: answers.length,
                                     itemBuilder: (context, index) {
@@ -181,6 +196,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                             ),
                                             backgroundColor: isSelected
                                                 ? (isCorrect ? Color(0xff00ff00) : Color(0xffff0000)).withOpacity(0.8)
+                                                : (isAnswered && isCorrect)
+                                                ? Color(0xff00ff00).withOpacity(0.8)
                                                 : Colors.transparent,
                                           ),
                                           onPressed: isAnswered
@@ -190,12 +207,15 @@ class _QuizScreenState extends State<QuizScreen> {
                                               isAnswered = true;
                                               selectedAnswer = answer;
                                               isCorrectAnswer = isCorrect;
+                                              if (isCorrect) {
+                                                _correctAnswers++;  // Increment the correct answers counter
+                                              }
                                             });
                                             timer?.cancel();
                                           },
                                           child: Text(
                                             answers[index],
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.w400,
                                               fontSize: 17,
@@ -206,46 +226,71 @@ class _QuizScreenState extends State<QuizScreen> {
                                     },
                                   ),
                                 ),
-                                Stack(
-                                  alignment: Alignment.center,
+
+                                Row(
                                   children: [
-                                    Text(
-                                      '$seconds',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: CircularProgressIndicator(
-                                        value: seconds / 30,
-                                        valueColor: const AlwaysStoppedAnimation(Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10.0, left: 5, right: 5),
-                                  child: Center(
-                                    child: ElevatedButton(
-                                      onPressed: isAnswered ? _nextQuestion : null,
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.deepPurple.withOpacity(0.27),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
-                                      child: Text(
-                                        "Next  ➤",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 18,
-                                          color: Colors.white,
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 15, bottom: 5),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            Text(
+                                              '$seconds',
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 17,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 60,
+                                              height: 60,
+                                              child: CircularProgressIndicator(
+                                                value: seconds / 15,
+                                                valueColor: const AlwaysStoppedAnimation(Colors.white),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
+                                    Spacer(), // This creates flexible space between the two children
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 3.0, left: 5, right: 5, bottom: 10),
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child:ElevatedButton(
+                                          onPressed: isAnswered
+                                              ? (currentQuestionIndex == totalQuestions - 1
+                                              ? () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => QuizResultScreen(correctAnswers: _correctAnswers,totalQuestions: totalQuestions,),
+                                              ),
+                                            );
+                                          }
+                                              : _nextQuestion)
+                                              : null,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.deepPurple.withOpacity(0.27),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                          ),
+                                          child: Text(
+                                            currentQuestionIndex == totalQuestions - 1 ? "Finish  ➤" : "Next  ➤",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w300,
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
                           ),

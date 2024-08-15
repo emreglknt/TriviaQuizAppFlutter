@@ -36,3 +36,9 @@ class SpeakText extends QuizEvent {
   @override
   List<Object> get props => [text];
 }
+
+
+
+
+
+

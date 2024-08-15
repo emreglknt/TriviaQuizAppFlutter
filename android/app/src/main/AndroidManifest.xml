@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="quiz_time"
+        android:label="Quiz Time!"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

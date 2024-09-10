@@ -20,7 +20,7 @@
 ## Getting Started 🚀
 
 To get the app up and running locally, follow these steps:
-
+ 
 ### Prerequisites
 
 - Flutter SDK
